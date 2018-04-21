@@ -3,7 +3,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import numpy as np
+import cv2    as cv
+import numpy  as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -62,7 +63,6 @@ def load_dataset():
 ##
 def plot_scores(history):
     
-    # Plot evolution of training and testing     
     fig, ax1 = plt.subplots()
     fig.suptitle('Learning Scores')
     ax1.set_xlabel('Epochs')
@@ -76,9 +76,17 @@ def plot_scores(history):
     plt.legend(handles=[loss,acc,val_loss,val_acc])
     fig.tight_layout()
     fig.savefig('plots/scores.pdf') 
-
-    plt.draw()
-
+    plt.show()
+    
+##
+def draw_example(x_test,y_test):
+    
+    c = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']    
+    i = np.random.randint(x_test.shape[0])
+    print(c[y_test[i].argmax(axis=0)])    
+    cv.imwrite('color_img.jpg',x_test[i])
+    cv.imshow("image",x_test[i])
+    cv.waitKey()
  
 ## Main
 if __name__ == "__main__":
@@ -90,9 +98,11 @@ if __name__ == "__main__":
     
     model = create_model(IMGSIZE,NUMCLASSES)
 
-    batch_size = 512
-    epochs     = 100
+    batch_size = 1024
+    epochs     = 1000
     
     history = model.fit(x_train,y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test,y_test))
 
     plot_scores(history)
+    draw_example(x_test,y_test)
+    
